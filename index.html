@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Character Frequency Counter</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2a37;
+      --muted: #5b6b7a;
+      --accent: #0f766e;
+      --accent-hover: #115e59;
+      --border: #d7e0ea;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(180deg, #eef4fb 0%, #f9fbfd 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 760px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 10px 26px rgba(17, 24, 39, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.6rem;
+    }
+
+    p {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 1rem;
+      resize: vertical;
+    }
+
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    button.secondary {
+      background: #64748b;
+    }
+
+    .results {
+      margin-top: 18px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--border);
+      padding: 8px;
+      text-align: left;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Character Frequency Counter</h1>
+    <p>Type or paste text, then click Count Characters.</p>
+
+    <label for="textInput">Input Text</label>
+    <textarea id="textInput" placeholder="Example: hello world"></textarea>
+
+    <div class="actions">
+      <button id="countBtn" type="button">Count Characters</button>
+      <button id="clearBtn" class="secondary" type="button">Clear</button>
+    </div>
+
+    <section class="results">
+      <h2>Results</h2>
+      <div id="resultArea" class="empty">No data yet.</div>
+    </section>
+  </main>
+
+  <script>
+    const textInput = document.getElementById("textInput");
+    const countBtn = document.getElementById("countBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const resultArea = document.getElementById("resultArea");
+
+    function displayChar(char) {
+      if (char === " ") return "[space]";
+      if (char === "\n") return "[newline]";
+      if (char === "\t") return "[tab]";
+      return char;
+    }
+
+    function countCharacters(text) {
+      const frequency = {};
+
+      for (const char of text) {
+        frequency[char] = (frequency[char] || 0) + 1;
+      }
+
+      return frequency;
+    }
+
+    function renderResults(frequency) {
+      const entries = Object.entries(frequency);
+
+      if (entries.length === 0) {
+        resultArea.className = "empty";
+        resultArea.textContent = "No characters to count.";
+        return;
+      }
+
+      entries.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+
+      const rows = entries
+        .map(([char, count]) => `<tr><td>${displayChar(char)}</td><td>${count}</td></tr>`)
+        .join("");
+
+      resultArea.className = "";
+      resultArea.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Character</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    countBtn.addEventListener("click", () => {
+      const text = textInput.value;
+      const frequency = countCharacters(text);
+      renderResults(frequency);
+    });
+
+    clearBtn.addEventListener("click", () => {
+      textInput.value = "";
+      resultArea.className = "empty";
+      resultArea.textContent = "No data yet.";
+      textInput.focus();
+    });
+  </script>
+</body>
+</html>
